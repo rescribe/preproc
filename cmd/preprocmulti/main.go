@@ -12,8 +12,8 @@ import (
 	"log"
 	"os"
 
-	"rescribe.xyz/go.git/integralimg"
-	"rescribe.xyz/go.git/preproc"
+	"rescribe.xyz/preproc"
+	"rescribe.xyz/preproc/integralimg"
 )
 
 // TODO: do more testing to see how good this assumption is

@@ -12,7 +12,7 @@ import (
 	"log"
 	"os"
 
-	"rescribe.xyz/go.git/preproc"
+	"rescribe.xyz/preproc"
 )
 
 // TODO: do more testing to see how good this assumption is

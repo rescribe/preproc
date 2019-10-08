@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"rescribe.xyz/go.git/preproc"
+	"rescribe.xyz/preproc"
 )
 
 func main() {

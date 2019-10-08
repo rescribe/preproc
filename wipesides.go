@@ -13,7 +13,7 @@ import (
 	"image/png"
 	"os"
 
-	"rescribe.xyz/go.git/integralimg"
+	"rescribe.xyz/preproc/integralimg"
 )
 
 // returns the proportion of the given window that is black pixels

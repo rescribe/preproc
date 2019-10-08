@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"rescribe.xyz/go.git/integralimg"
+	"rescribe.xyz/preproc/integralimg"
 )
 
 // TODO: do more testing to see how good this assumption is

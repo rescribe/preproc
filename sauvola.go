@@ -4,7 +4,7 @@ import (
 	"image"
 	"image/color"
 
-	"rescribe.xyz/go.git/integralimg"
+	"rescribe.xyz/preproc/integralimg"
 )
 
 // Implements Sauvola's algorithm for text binarization, see paper
