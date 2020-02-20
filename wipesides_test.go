@@ -33,7 +33,7 @@ func TestWipeSides(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not open file %s: %v\n", c.orig, err)
 			}
-			actual = Wipe(orig, c.wsize, c.thresh)
+			actual = Wipe(orig, c.wsize, c.thresh, 30)
 			if *update {
 				f, err := os.Create(c.golden)
 				defer f.Close()
