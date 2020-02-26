@@ -15,7 +15,7 @@ import (
 	"os"
 	"strings"
 
-	"rescribe.xyz/preproc/integralimg"
+	"rescribe.xyz/integralimg"
 )
 
 // TODO: do more testing to see how good this assumption is

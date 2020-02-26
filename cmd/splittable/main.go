@@ -14,7 +14,7 @@ import (
 	"log"
 	"os"
 
-	"rescribe.xyz/preproc/integralimg"
+	"rescribe.xyz/integralimg"
 )
 
 const usage = `Usage: splittable [-t thresh] [-w winsize] inimg outbase

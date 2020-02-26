@@ -8,7 +8,7 @@ import (
 	"image"
 	"image/color"
 
-	"rescribe.xyz/preproc/integralimg"
+	"rescribe.xyz/integralimg"
 )
 
 // Implements Sauvola's algorithm for text binarization, see paper
