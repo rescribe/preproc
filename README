@@ -5,7 +5,10 @@ useful for preprocessing page images for OCR. It also contains
 several commands in the cmd/ directory which can be used to
 preprocess images directly.
 
-# Commands
+This is a Go package, and can be installed in the standard go way,
+by running `go get rescribe.xyz/preproc/...` once go is installed.
+
+## Commands
 
 There are several commands in the cmd/ directory which are useful
 in their own right as well as serving as examples of using the
@@ -18,19 +21,19 @@ package.
   - wipe         : wipes sections of an image that are outside an
                    area detected as content
 
-# Bugs
+## Bugs
 
 The integral image operations don't produce exactly the same result
 as their non-integral image counterparts. The difference is small
 enough that it has little effect on the output images, but it ought
 to be identical.
 
-# Contributions
+## Contributions
 
 Any and all comments, bug reports, patches or pull requests would
 be very welcomely received. Please email them to <nick@rescribe.xyz>.
 
-# License
+## License
 
 This package is licensed under the GPLv3. See the LICENSE file for
 more details.
