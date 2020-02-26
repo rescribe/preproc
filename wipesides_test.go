@@ -8,7 +8,6 @@ package preproc
 // TODO: test non integral img version
 
 import (
-	"flag"
 	"fmt"
 	"image"
 	"image/png"
@@ -17,7 +16,6 @@ import (
 )
 
 func TestWipeSides(t *testing.T) {
-	var update = flag.Bool("updatewipe", false, "update golden files")
 	cases := []struct {
 		name   string
 		orig   string

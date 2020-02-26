@@ -5,7 +5,6 @@
 package preproc
 
 import (
-	"flag"
 	"fmt"
 	"image"
 	"image/png"
@@ -14,9 +13,6 @@ import (
 )
 
 func TestBinarization(t *testing.T) {
-	var slow = flag.Bool("slow", false, "include slow tests")
-	var update = flag.Bool("updatesauvola", false, "update golden files")
-
 	cases := []struct {
 		name   string
 		orig   string
@@ -43,10 +39,10 @@ func TestBinarization(t *testing.T) {
 			case "integralsauvola":
 				actual = IntegralSauvola(orig, c.ksize, c.wsize)
 			case "sauvola":
-				if *slow {
+				if !testing.Short() {
 					actual = Sauvola(orig, c.ksize, c.wsize)
 				} else {
-					t.Skip("Skipping slow test; use -slow to run it.\n")
+					t.Skip("Skipping long test due to -short flag.\n")
 				}
 			default:
 				t.Fatalf("No method %s\n", c.name)
