@@ -13,23 +13,24 @@ import (
 	"image/png"
 	"os"
 	"testing"
+
+	"rescribe.xyz/integralimg"
 )
 
 func TestWipeSides(t *testing.T) {
 	cases := []struct {
-		name   string
 		orig   string
 		golden string
 		thresh float64
 		wsize  int
 	}{
-		{"integralwipesides", "testdata/pg2.png", "testdata/pg2_integralwipesides_t0.02_w5.png", 0.02, 5},
-		{"integralwipesides", "testdata/pg2.png", "testdata/pg2_integralwipesides_t0.05_w5.png", 0.05, 5},
-		{"integralwipesides", "testdata/pg2.png", "testdata/pg2_integralwipesides_t0.05_w25.png", 0.05, 25},
+		{"testdata/pg2.png", "testdata/pg2_integralwipesides_t0.02_w5.png", 0.02, 5},
+		{"testdata/pg2.png", "testdata/pg2_integralwipesides_t0.05_w5.png", 0.05, 5},
+		{"testdata/pg2.png", "testdata/pg2_integralwipesides_t0.05_w25.png", 0.05, 25},
 	}
 
 	for _, c := range cases {
-		t.Run(fmt.Sprintf("%s_%0.2f_%d", c.name, c.thresh, c.wsize), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Exact/%s_%0.2f_%d", c.orig, c.thresh, c.wsize), func(t *testing.T) {
 			var actual *image.Gray
 			orig, err := decode(c.orig)
 			if err != nil {
@@ -53,6 +54,40 @@ func TestWipeSides(t *testing.T) {
 			}
 			if !imgsequal(golden, actual) {
 				t.Errorf("Processed %s differs to %s\n", c.orig, c.golden)
+			}
+		})
+	}
+	testedgecases := []struct {
+		filename string
+		minleft  int
+		maxleft  int
+		minright int
+		maxright int
+		thresh   float64
+		wsize    int
+	}{
+		{"testdata/0002.png", 36, 250, 967, 998, 0.02, 5},
+	}
+
+	for _, c := range testedgecases {
+		t.Run(fmt.Sprintf("Edge/%s_%0.2f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
+			img, err := decode(c.filename)
+			if err != nil {
+				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
+			}
+			integral := integralimg.ToIntegralImg(img)
+			leftedge, rightedge := findedges(integral, c.wsize, c.thresh)
+			if leftedge < c.minleft {
+				t.Errorf("Left edge %d < minimum %d", leftedge, c.minleft)
+			}
+			if leftedge > c.maxleft {
+				t.Errorf("Left edge %d > maximum %d", leftedge, c.maxleft)
+			}
+			if rightedge < c.minright {
+				t.Errorf("Right edge %d < minimum %d", rightedge, c.minright)
+			}
+			if rightedge > c.maxright {
+				t.Errorf("Right edge %d > maximum %d", rightedge, c.maxright)
 			}
 		})
 	}
