@@ -116,6 +116,19 @@ func toonarrow(img *image.Gray, lowedge int, highedge int, min int) bool {
 	return false
 }
 
+// func sideways flips an image by sideways
+func sideways(img *image.Gray) *image.Gray {
+	b := img.Bounds()
+	newb := image.Rect(b.Min.Y, b.Min.X, b.Max.Y, b.Max.X)
+	new := image.NewGray(newb)
+	for x := b.Min.X; x < b.Max.X; x++ {
+		for y := b.Min.Y; y < b.Max.Y; y++ {
+			new.SetGray(y, x, img.GrayAt(x, y))
+		}
+	}
+	return new
+}
+
 // Wipe fills the sections of image which fall outside the content
 // area with white, providing the content area is above min %
 func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
@@ -125,6 +138,19 @@ func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 		return img
 	}
 	return wipesides(img, lowedge, highedge)
+}
+
+// VWipe fills the sections of image which fall outside the vertical
+// content area with white, providing the content area is above min %
+func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
+	rotimg := sideways(img)
+	integral := integralimg.ToIntegralImg(rotimg)
+	lowedge, highedge := findedges(integral, wsize, thresh)
+	if toonarrow(img, lowedge, highedge, min) {
+		return img
+	}
+	wiped := wipesides(rotimg, lowedge, highedge)
+	return sideways(wiped)
 }
 
 // WipeFile wipes an image file, filling the sections of the image
