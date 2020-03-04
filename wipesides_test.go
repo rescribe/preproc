@@ -57,7 +57,7 @@ func TestWipeSides(t *testing.T) {
 			}
 		})
 	}
-	testedgecases := []struct {
+	leftrightedgecases := []struct {
 		filename string
 		minleft  int
 		maxleft  int
@@ -67,10 +67,11 @@ func TestWipeSides(t *testing.T) {
 		wsize    int
 	}{
 		{"testdata/0002.png", 36, 250, 967, 998, 0.02, 5},
+		{"testdata/1727_GREENE_0048.png", 40, 150, 1270, 1281, 0.02, 5},
 	}
 
-	for _, c := range testedgecases {
-		t.Run(fmt.Sprintf("Edge/%s_%0.2f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
+	for _, c := range leftrightedgecases {
+		t.Run(fmt.Sprintf("LeftRightEdge/%s_%0.2f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
 			img, err := decode(c.filename)
 			if err != nil {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
@@ -88,6 +89,41 @@ func TestWipeSides(t *testing.T) {
 			}
 			if rightedge > c.maxright {
 				t.Errorf("Right edge %d > maximum %d", rightedge, c.maxright)
+			}
+		})
+	}
+
+	topbottomedgecases := []struct {
+		filename  string
+		mintop    int
+		maxtop    int
+		minbottom int
+		maxbottom int
+		thresh    float64
+		wsize     int
+	}{
+		{"testdata/1727_GREENE_0048.png", 172, 237, 2204, 2244, 0.005, 120},
+	}
+
+	for _, c := range topbottomedgecases {
+		t.Run(fmt.Sprintf("TopBottomEdge/%s_%0.2f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
+			img, err := decode(c.filename)
+			if err != nil {
+				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
+			}
+			integral := integralimg.ToIntegralImg(sideways(img))
+			topedge, bottomedge := findedges(integral, c.wsize, c.thresh)
+			if topedge < c.mintop {
+				t.Errorf("Top edge %d < minimum %d", topedge, c.mintop)
+			}
+			if topedge > c.maxtop {
+				t.Errorf("Top edge %d > maximum %d", topedge, c.maxtop)
+			}
+			if bottomedge < c.minbottom {
+				t.Errorf("Bottom edge %d < minimum %d", bottomedge, c.minbottom)
+			}
+			if bottomedge > c.maxbottom {
+				t.Errorf("Bottom edge %d > maximum %d", bottomedge, c.maxbottom)
 			}
 		})
 	}
