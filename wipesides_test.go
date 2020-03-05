@@ -4,8 +4,9 @@
 
 package preproc
 
-// TODO: add different pages as test cases
-// TODO: test non integral img version
+// TODO: Integrate all test cases into one struct that has
+//       several different tests (horiz only, vert only,
+//       both) run on it.
 
 import (
 	"fmt"
@@ -103,10 +104,11 @@ func TestWipeSides(t *testing.T) {
 		wsize     int
 	}{
 		{"testdata/1727_GREENE_0048.png", 172, 237, 2204, 2244, 0.005, 120},
+		{"testdata/1687_SCHWEITZER_0030.png", 142, 231, 2595, 2656, 0.005, 90},
 	}
 
 	for _, c := range topbottomedgecases {
-		t.Run(fmt.Sprintf("TopBottomEdge/%s_%0.2f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
+		t.Run(fmt.Sprintf("TopBottomEdge/%s_%0.3f_%d", c.filename, c.thresh, c.wsize), func(t *testing.T) {
 			img, err := decode(c.filename)
 			if err != nil {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
