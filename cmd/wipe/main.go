@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv3
 // license that can be found in the LICENSE file.
 
+// wipe wipes sections of an image which are outside of an automatically
+// determined content area
 package main
 
 import (

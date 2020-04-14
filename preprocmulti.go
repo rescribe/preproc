@@ -4,8 +4,6 @@
 
 package preproc
 
-// TODO: come up with a way to set a good ksize automatically
-
 import (
 	"fmt"
 	"image"
@@ -18,8 +16,8 @@ import (
 	"rescribe.xyz/integralimg"
 )
 
-// TODO: do more testing to see how good this assumption is
 func autowsize(bounds image.Rectangle) int {
+	// TODO: do more testing to see how good this assumption is
 	return bounds.Dx() / 60
 }
 
@@ -31,11 +29,11 @@ func autowsize(bounds image.Rectangle) int {
 // wipe: Whether to wipe (clear sides) the image
 // wipeWsize: Window size for wiping algorithm
 // wipeMinWidthPerc: Minimum percentage of the image width for the content width calculation to be considered valid
-// Note: copied from cmd/preprocmulti/main.go, should think about the best way
-//       to organise this code later.
-// TODO: return errors that encapsulate the err describing where it was encountered
-// TODO: do the post-integral image stuff in separate goroutines for speed
 func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int, wipe bool, wipeWsize int, wipeMinWidthPerc int) ([]string, error) {
+	// Note: copied from cmd/preprocmulti/main.go, should think about the best way to organise this code later.
+	// TODO: return errors that encapsulate the err describing where it was encountered
+	// TODO: come up with a way to set a good ksize automatically
+
 	// Make outBase inPath up to final .
 	s := strings.Split(inPath, ".")
 	outBase := strings.Join(s[:len(s)-1], "")

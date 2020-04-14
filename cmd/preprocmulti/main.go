@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv3
 // license that can be found in the LICENSE file.
 
+// preprocmulti runs binarisation with a variety of different binarisation
+// levels, preprocessing and saving each version
 package main
 
 // TODO: come up with a way to set a good ksize automatically

@@ -59,8 +59,8 @@ func IntegralSauvola(img *image.Gray, ksize float64, windowsize int) *image.Gray
 }
 
 // PreCalcedSauvola Implements Sauvola's algorithm using precalculated Integral Images
-// TODO: have this be the root function that the other two reference
 func PreCalcedSauvola(integrals integralimg.WithSq, img *image.Gray, ksize float64, windowsize int) *image.Gray {
+	// TODO: have this be the root function that the other two reference
 	b := img.Bounds()
 	new := image.NewGray(b)
 

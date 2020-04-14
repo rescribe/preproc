@@ -10,10 +10,10 @@ import (
 	"math"
 )
 
-// TODO: name better; maybe verb, x-er
-// TODO: implement these for regular image, and use them to make
-//       image functions generic for integral and non- images
 type UsefulImg interface {
+	// TODO: name better; maybe verb, x-er
+	// TODO: implement these for regular image, and use them to make
+	//       image functions generic for integral and non- images
 	MeanWindow()
 	MeanStdDevWindow()
 }

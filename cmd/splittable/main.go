@@ -2,6 +2,8 @@
 // Use of this source code is governed by the GPLv3
 // license that can be found in the LICENSE file.
 
+// splittable is an experimental program to split a table into
+// individual cells suitable for OCR
 package main
 
 import (

@@ -2,6 +2,7 @@
 // Use of this source code is governed by the GPLv3
 // license that can be found in the LICENSE file.
 
+// preproc runs binarisation and wipe preprocessing on an image
 package main
 
 // TODO: come up with a way to set a good ksize automatically
