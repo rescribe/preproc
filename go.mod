@@ -1,3 +1,3 @@
 module rescribe.xyz/preproc
 
-require rescribe.xyz/integralimg v0.1.0
+require rescribe.xyz/integralimg v0.1.1
