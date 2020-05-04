@@ -79,6 +79,8 @@ func surrounding(img *image.Gray, x int, y int, size int) []int {
 	return s
 }
 
+// BinToZeroInv converts a binary thresholded image to a zero inverse
+// binary thresholded image
 func BinToZeroInv(bin *image.Gray, orig *image.RGBA) (*image.RGBA, error) {
 	b := bin.Bounds()
 	if !b.Eq(orig.Bounds()) {
