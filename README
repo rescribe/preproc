@@ -6,7 +6,9 @@ several commands in the cmd/ directory which can be used to
 preprocess images directly.
 
 This is a Go package, and can be installed in the standard go way,
-by running `go get rescribe.xyz/preproc/...`
+by running `go get rescribe.xyz/preproc/...` and documentation
+can be read with the `go doc` command or online at
+<https://pkg.go.dev/rescribe.xyz/preproc>.
 
 ## Commands
 
