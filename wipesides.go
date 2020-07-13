@@ -4,8 +4,8 @@
 
 package preproc
 
-// TODO: add minimum size variable (default ~30%?)
 // TODO: switch to an interface rather than integralimg.I
+// TODO: optionally return the edges chosen
 
 import (
 	"errors"
@@ -28,24 +28,32 @@ func proportion(i integralimg.I, x int, size int) float64 {
 
 // findbestedge goes through every vertical line from x to x+w to
 // find the one with the lowest proportion of black pixels.
+// if there are multiple lines with the same proportion (e.g. zero),
+// choose the middle one.
 func findbestedge(img integralimg.I, x int, w int) int {
-	var bestx int
 	var best float64
+	var bestxs []int
 
 	if w == 1 {
 		return x
 	}
 
+	best = 100
+
 	right := x + w
 	for ; x < right; x++ {
 		prop := proportion(img, x, 1)
-		if prop > best {
+		if prop < best {
+			bestxs = make([]int, 0)
 			best = prop
-			bestx = x
+		}
+		if prop == best {
+			bestxs = append(bestxs, x)
 		}
 	}
+	middlex := bestxs[len(bestxs)/2]
 
-	return bestx
+	return middlex
 }
 
 // findedges finds the edges of the main content, by moving a window of wsize
@@ -68,6 +76,31 @@ func findedges(img integralimg.I, wsize int, thresh float64) (int, int) {
 
 	for x := maxx/2 - notcentre; x > 0; x-- {
 		if proportion(img, x, wsize) <= thresh {
+			lowedge = findbestedge(img, x, wsize)
+			break
+		}
+	}
+
+	return lowedge, highedge
+}
+
+// findedgesOutin finds the edges of the main content as findedges does,
+// but working from the outside of the image inwards, rather than from the
+// middle outwards.
+// TODO: test what difference this makes
+func findedgesOutin(img integralimg.I, wsize int, thresh float64) (int, int) {
+	maxx := len(img[0]) - 1
+	var lowedge, highedge int = 0, maxx
+
+	for x := maxx-wsize; x > 0; x-- {
+		if proportion(img, x, wsize) > thresh {
+			highedge = findbestedge(img, x, wsize)
+			break
+		}
+	}
+
+	for x := 0; x < maxx-wsize; x++ {
+		if proportion(img, x, wsize) > thresh {
 			lowedge = findbestedge(img, x, wsize)
 			break
 		}
@@ -145,7 +178,8 @@ func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 	rotimg := sideways(img)
 	integral := integralimg.ToIntegralImg(rotimg)
-	lowedge, highedge := findedges(integral, wsize, thresh)
+	// TODO: test whether there are any places where Outin makes a real difference
+	lowedge, highedge:= findedgesOutin(integral, wsize, thresh)
 	if toonarrow(img, lowedge, highedge, min) {
 		return img
 	}
@@ -158,10 +192,13 @@ func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 // content area is above min %.
 // inPath: path of the input image.
 // outPath: path to save the output image.
-// wsize: window size for wipe algorithm.
-// thresh: threshold for wipe algorithm.
-// min: minimum % of content area width to consider valid.
-func WipeFile(inPath string, outPath string, wsize int, thresh float64, min int) error {
+// hwsize: window size for horizontal wipe algorithm.
+// hthresh: threshold for horizontal wipe algorithm.
+// hmin: minimum % of content area width to consider valid.
+// vwsize: window size for vertical wipe algorithm.
+// vthresh: threshold for vertical wipe algorithm.
+// vmin: minimum % of content area height to consider valid.
+func WipeFile(inPath string, outPath string, hwsize int, hthresh float64, hmin int, vwsize int, vthresh float64, vmin int) error {
 	f, err := os.Open(inPath)
 	defer f.Close()
 	if err != nil {
@@ -175,8 +212,8 @@ func WipeFile(inPath string, outPath string, wsize int, thresh float64, min int)
 	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
 	draw.Draw(gray, b, img, b.Min, draw.Src)
 
-	hclean := Wipe(gray, wsize, thresh, min)
-	clean := VWipe(hclean, wsize, thresh, min)
+	hclean := Wipe(gray, hwsize, hthresh, hmin)
+	clean := VWipe(hclean, vwsize, vthresh, vmin)
 
 	f, err = os.Create(outPath)
 	if err != nil {

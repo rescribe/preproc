@@ -103,8 +103,8 @@ func TestWipeSides(t *testing.T) {
 		thresh    float64
 		wsize     int
 	}{
-		{"testdata/1727_GREENE_0048.png", 172, 237, 2204, 2244, 0.005, 120},
-		{"testdata/1687_SCHWEITZER_0030.png", 142, 231, 2595, 2656, 0.005, 90},
+		{"testdata/1727_GREENE_0048.png", 70, 237, 2204, 2450, 0.005, 120},
+		{"testdata/1687_SCHWEITZER_0030.png", 70, 231, 2595, 2770, 0.005, 90},
 	}
 
 	for _, c := range topbottomedgecases {
