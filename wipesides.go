@@ -212,8 +212,8 @@ func WipeFile(inPath string, outPath string, hwsize int, hthresh float64, hmin i
 	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
 	draw.Draw(gray, b, img, b.Min, draw.Src)
 
-	hclean := Wipe(gray, hwsize, hthresh, hmin)
-	clean := VWipe(hclean, vwsize, vthresh, vmin)
+	vclean := VWipe(gray, vwsize, vthresh, vmin)
+	clean := Wipe(vclean, hwsize, hthresh, hmin)
 
 	f, err = os.Create(outPath)
 	if err != nil {
