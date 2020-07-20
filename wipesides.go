@@ -149,7 +149,7 @@ func toonarrow(img *image.Gray, lowedge int, highedge int, min int) bool {
 	return false
 }
 
-// func sideways flips an image by sideways
+// sideways flips an image sideways
 func sideways(img *image.Gray) *image.Gray {
 	b := img.Bounds()
 	newb := image.Rect(b.Min.Y, b.Min.X, b.Max.Y, b.Max.X)

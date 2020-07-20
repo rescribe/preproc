@@ -17,6 +17,8 @@ in their own right as well as serving as examples of using the
 package.
 
   - binarize     : binarises an image using the sauvola algorithm
+  - pggraph      : creates a graph showing the proportion of black
+                   pixels for slices through an image
   - preproc      : binarises and wipes an image
   - preprocmulti : binarises and wipes an image with multiple
                    binarisation ksize values
