@@ -13,15 +13,15 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
-	_ "image/png"
 	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"log"
 	"os"
 	"sort"
 
-	"rescribe.xyz/integralimg"
 	chart "github.com/wcharczuk/go-chart"
+	"rescribe.xyz/integralimg"
 )
 
 const usage = `Usage: pggraph [-vertical] [-width] inimg graphname
@@ -79,7 +79,7 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 
 	numAroundMiddle := int(middlePercent / 2 * float64(len(xs)) / float64(100))
 	if numAroundMiddle > 1 {
-		for i := (len(xs) / 2) - numAroundMiddle; i < (len(xs) / 2) + numAroundMiddle; i++ {
+		for i := (len(xs) / 2) - numAroundMiddle; i < (len(xs)/2)+numAroundMiddle; i++ {
 			midxs = append(midxs, xs[i])
 		}
 	} else {
@@ -98,7 +98,7 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 
 	minSeries := &chart.MinSeries{
 		Style: chart.Style{
-			StrokeColor: chart.ColorAlternateGray,
+			StrokeColor:     chart.ColorAlternateGray,
 			StrokeDashArray: []float64{5.0, 5.0},
 		},
 		InnerSeries: middleSeries,
@@ -106,26 +106,26 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 
 	maxSeries := &chart.MaxSeries{
 		Style: chart.Style{
-			StrokeColor: chart.ColorAlternateGray,
+			StrokeColor:     chart.ColorAlternateGray,
 			StrokeDashArray: []float64{5.0, 5.0},
 		},
 		InnerSeries: middleSeries,
 	}
 
 	var ticks []chart.Tick
-	var tickEvery = xs[len(xs) - 1] / numTicks
-	for i := 0; i < xs[len(xs) - 1]; i += tickEvery {
+	var tickEvery = xs[len(xs)-1] / numTicks
+	for i := 0; i < xs[len(xs)-1]; i += tickEvery {
 		ticks = append(ticks, chart.Tick{float64(i), fmt.Sprintf("%d", i)})
 	}
-	lastx := xs[len(xs) - 1]
-	ticks[len(ticks) - 1] = chart.Tick{float64(lastx), fmt.Sprintf("%d", lastx)}
+	lastx := xs[len(xs)-1]
+	ticks[len(ticks)-1] = chart.Tick{float64(lastx), fmt.Sprintf("%d", lastx)}
 
 	graph := chart.Chart{
-		Title: title,
-		Width: 1920,
+		Title:  title,
+		Width:  1920,
 		Height: 800,
 		XAxis: chart.XAxis{
-			Name: "Pixel number",
+			Name:  "Pixel number",
 			Ticks: ticks,
 		},
 		YAxis: chart.YAxis{
@@ -174,8 +174,8 @@ func main() {
 	integral := integralimg.ToIntegralImg(gray)
 
 	points := make(map[int]float64)
-	maxx := len(integral[0]) -1
-	for x := 0; x + *width < maxx; x += *width {
+	maxx := len(integral[0]) - 1
+	for x := 0; x+*width < maxx; x += *width {
 		w := integral.GetVerticalWindow(x, *width)
 		points[x] = w.Proportion()
 	}
