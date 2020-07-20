@@ -33,7 +33,7 @@ this module.
 `
 
 const middlePercent = 20
-const tickEvery = 30
+const numTicks = 30
 
 // sideways flips an image sideways
 func sideways(img *image.Gray) *image.Gray {
@@ -112,23 +112,13 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 		InnerSeries: middleSeries,
 	}
 
-	width := xs[1]
 	var ticks []chart.Tick
-	// if width is larger than tickEvery, just have a tick for each point,
-	// otherwise have a tick every tickEvery period
-	if width > tickEvery {
-		for _, v := range xs {
-			ticks = append(ticks, chart.Tick{float64(v), fmt.Sprintf("%d", v)})
-		}
-	} else {
-		for i := 0; i < len(xs) - 1; i += tickEvery {
-			ticks = append(ticks, chart.Tick{float64(xs[i]), fmt.Sprintf("%d", xs[i])})
-		}
-		if len(ticks) > 1 {
-			lastx := xs[len(xs) - 1]
-			ticks[len(ticks) - 1] = chart.Tick{float64(lastx), fmt.Sprintf("%d", lastx)}
-		}
+	var tickEvery = xs[len(xs) - 1] / numTicks
+	for i := 0; i < xs[len(xs) - 1]; i += tickEvery {
+		ticks = append(ticks, chart.Tick{float64(i), fmt.Sprintf("%d", i)})
 	}
+	lastx := xs[len(xs) - 1]
+	ticks[len(ticks) - 1] = chart.Tick{float64(lastx), fmt.Sprintf("%d", lastx)}
 
 	graph := chart.Chart{
 		Title: title,
