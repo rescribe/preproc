@@ -4,7 +4,6 @@
 
 package preproc
 
-// TODO: switch to an interface rather than integralimg.I
 // TODO: optionally return the edges chosen
 
 import (
@@ -21,7 +20,7 @@ import (
 )
 
 // returns the proportion of the given window that is black pixels
-func proportion(i integralimg.I, x int, size int) float64 {
+func proportion(i ImageWindower, x int, size int) float64 {
 	w := i.GetVerticalWindow(x, size)
 	return w.Proportion()
 }
@@ -30,7 +29,7 @@ func proportion(i integralimg.I, x int, size int) float64 {
 // find the one with the lowest proportion of black pixels.
 // if there are multiple lines with the same proportion (e.g. zero),
 // choose the middle one.
-func findbestedge(img integralimg.I, x int, w int) int {
+func findbestedge(img ImageWindower, x int, w int) int {
 	var best float64
 	var bestxs []int
 
@@ -59,8 +58,8 @@ func findbestedge(img integralimg.I, x int, w int) int {
 // findedges finds the edges of the main content, by moving a window of wsize
 // from near the middle of the image to the left and right, stopping when it reaches
 // a point at which there is a lower proportion of black pixels than thresh.
-func findedges(img integralimg.I, wsize int, thresh float64) (int, int) {
-	maxx := len(img[0]) - 1
+func findedges(img ImageWindower, wsize int, thresh float64) (int, int) {
+	maxx := img.Bounds().Dx() - 1
 	var lowedge, highedge int = 0, maxx
 
 	// don't start at the middle, as this will fail for 2 column layouts,
@@ -88,8 +87,8 @@ func findedges(img integralimg.I, wsize int, thresh float64) (int, int) {
 // but working from the outside of the image inwards, rather than from the
 // middle outwards.
 // TODO: test what difference this makes
-func findedgesOutin(img integralimg.I, wsize int, thresh float64) (int, int) {
-	maxx := len(img[0]) - 1
+func findedgesOutin(img ImageWindower, wsize int, thresh float64) (int, int) {
+	maxx := img.Bounds().Dx() - 1
 	var lowedge, highedge int = 0, maxx
 
 	for x := maxx-wsize; x > 0; x-- {
@@ -165,8 +164,10 @@ func sideways(img *image.Gray) *image.Gray {
 // Wipe fills the sections of image which fall outside the content
 // area with white, providing the content area is above min %
 func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
-	integral := integralimg.ToIntegralImg(img)
-	lowedge, highedge := findedges(integral, wsize, thresh)
+	b := img.Bounds()
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, img, b.Min, draw.Src)
+	lowedge, highedge := findedges(*intImg, wsize, thresh)
 	if toonarrow(img, lowedge, highedge, min) {
 		return img
 	}
@@ -177,9 +178,11 @@ func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 // content area with white, providing the content area is above min %
 func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 	rotimg := sideways(img)
-	integral := integralimg.ToIntegralImg(rotimg)
+	b := rotimg.Bounds()
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, rotimg, b.Min, draw.Src)
 	// TODO: test whether there are any places where Outin makes a real difference
-	lowedge, highedge:= findedgesOutin(integral, wsize, thresh)
+	lowedge, highedge:= findedgesOutin(*intImg, wsize, thresh)
 	if toonarrow(img, lowedge, highedge, min) {
 		return img
 	}
@@ -200,10 +203,10 @@ func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 // vmin: minimum % of content area height to consider valid.
 func WipeFile(inPath string, outPath string, hwsize int, hthresh float64, hmin int, vwsize int, vthresh float64, vmin int) error {
 	f, err := os.Open(inPath)
-	defer f.Close()
 	if err != nil {
 		return errors.New(fmt.Sprintf("Could not open file %s: %v", inPath, err))
 	}
+	defer f.Close()
 	img, _, err := image.Decode(f)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Could not decode image: %v", err))

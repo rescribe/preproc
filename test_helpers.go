@@ -30,7 +30,7 @@ func decode(s string) (*image.Gray, error) {
 	return gray, nil
 }
 
-func imgsequal(img1 *image.Gray, img2 *image.Gray) bool {
+func imgsequal(img1, img2 image.Image) bool {
 	b := img1.Bounds()
 	if !b.Eq(img2.Bounds()) {
 		return false

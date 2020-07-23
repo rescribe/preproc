@@ -11,6 +11,7 @@ package preproc
 import (
 	"fmt"
 	"image"
+	"image/draw"
 	"image/png"
 	"os"
 	"testing"
@@ -77,8 +78,10 @@ func TestWipeSides(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
 			}
-			integral := integralimg.ToIntegralImg(img)
-			leftedge, rightedge := findedges(integral, c.wsize, c.thresh)
+			b := img.Bounds()
+			integral := integralimg.NewImage(b)
+			draw.Draw(integral, b, img, b.Min, draw.Src)
+			leftedge, rightedge := findedges(*integral, c.wsize, c.thresh)
 			if leftedge < c.minleft {
 				t.Errorf("Left edge %d < minimum %d", leftedge, c.minleft)
 			}
@@ -113,8 +116,10 @@ func TestWipeSides(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
 			}
-			integral := integralimg.ToIntegralImg(sideways(img))
-			topedge, bottomedge := findedges(integral, c.wsize, c.thresh)
+			b := img.Bounds()
+			intImg := integralimg.NewImage(b)
+			draw.Draw(intImg, b, img, b.Min, draw.Src)
+			topedge, bottomedge := findedges(*intImg, c.wsize, c.thresh)
 			if topedge < c.mintop {
 				t.Errorf("Top edge %d < minimum %d", topedge, c.mintop)
 			}

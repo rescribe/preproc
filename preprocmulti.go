@@ -49,10 +49,8 @@ func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int,
 	if err != nil {
 		return donePaths, err
 	}
-	b := img.Bounds()
-	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
-	draw.Draw(gray, b, img, b.Min, draw.Src)
 
+	b := img.Bounds()
 	if binWsize == 0 {
 		binWsize = autowsize(b)
 	}
@@ -61,11 +59,15 @@ func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int,
 		binWsize++
 	}
 
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, img, b.Min, draw.Src)
+	intSqImg := integralimg.NewSqImage(b)
+	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
+
 	var clean, threshimg image.Image
-	integrals := integralimg.ToAllIntegralImg(gray)
 
 	for _, k := range ksizes {
-		threshimg = PreCalcedSauvola(integrals, gray, k, binWsize)
+		threshimg = PreCalcedSauvola(*intImg, *intSqImg, img, k, binWsize)
 
 		if binType == "zeroinv" {
 			threshimg, err = BinToZeroInv(threshimg.(*image.Gray), img.(*image.RGBA))

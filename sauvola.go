@@ -41,38 +41,32 @@ func Sauvola(img image.Image, ksize float64, windowsize int) *image.Gray {
 // "Efficient Implementation of Local Adaptive Thresholding Techniques Using Integral Images"
 // and
 // https://stackoverflow.com/questions/13110733/computing-image-integral
-func IntegralSauvola(img *image.Gray, ksize float64, windowsize int) *image.Gray {
+func IntegralSauvola(img image.Image, ksize float64, windowsize int) *image.Gray {
 	b := img.Bounds()
-	new := image.NewGray(b)
 
-	integrals := integralimg.ToAllIntegralImg(img)
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, img, b.Min, draw.Src)
+	intSqImg := integralimg.NewSqImage(b)
+	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
 
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			m, dev := integrals.MeanStdDevWindow(x, y, windowsize)
-			threshold := m * (1 + ksize*((dev/128)-1))
-			if img.GrayAt(x, y).Y < uint8(threshold) {
-				new.SetGray(x, y, color.Gray{0})
-			} else {
-				new.SetGray(x, y, color.Gray{255})
-			}
-		}
-	}
-
-	return new
+	return PreCalcedSauvola(*intImg, *intSqImg, img, ksize, windowsize)
 }
 
 // PreCalcedSauvola Implements Sauvola's algorithm using precalculated Integral Images
-func PreCalcedSauvola(integrals integralimg.WithSq, img *image.Gray, ksize float64, windowsize int) *image.Gray {
-	// TODO: have this be the root function that the other two reference
+func PreCalcedSauvola(intImg integralimg.Image, intSqImg integralimg.SqImage, img image.Image, ksize float64, windowsize int) *image.Gray {
 	b := img.Bounds()
+	gray := image.NewGray(b)
+	draw.Draw(gray, b, img, b.Min, draw.Src)
 	new := image.NewGray(b)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
-			m, dev := integrals.MeanStdDevWindow(x, y, windowsize)
-			threshold := m * (1 + ksize*((dev/128)-1))
-			if img.GrayAt(x, y).Y < uint8(threshold) {
+			m, dev := integralimg.MeanStdDevWindow(intImg, intSqImg, x, y, windowsize)
+			// Divide by 255 to adjust from Gray16 used by integralimg to 8 bit Gray
+			m8 := m / 255
+			dev8 := dev / 255
+			threshold := m8 * (1 + ksize*((dev8/128)-1))
+			if gray.GrayAt(x, y).Y < uint8(math.Round(threshold)) {
 				new.SetGray(x, y, color.Gray{0})
 			} else {
 				new.SetGray(x, y, color.Gray{255})

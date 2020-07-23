@@ -8,14 +8,14 @@ import (
 	"errors"
 	"image"
 	"math"
+
+	"rescribe.xyz/integralimg"
 )
 
-type UsefulImg interface {
-	// TODO: name better; maybe verb, x-er
-	// TODO: implement these for regular image, and use them to make
-	//       image functions generic for integral and non- images
-	MeanWindow()
-	MeanStdDevWindow()
+type ImageWindower interface {
+	image.Image
+	GetWindow(x, y, size int) integralimg.Window
+	GetVerticalWindow(x, width int) integralimg.Window
 }
 
 func mean(i []int) float64 {
