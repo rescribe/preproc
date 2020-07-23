@@ -7,22 +7,26 @@ package preproc
 import (
 	"image"
 	"image/color"
+	"image/draw"
+	"math"
 
 	"rescribe.xyz/integralimg"
 )
 
 // Implements Sauvola's algorithm for text binarization, see paper
 // "Adaptive document image binarization" (2000)
-func Sauvola(img *image.Gray, ksize float64, windowsize int) *image.Gray {
+func Sauvola(img image.Image, ksize float64, windowsize int) *image.Gray {
 	b := img.Bounds()
+	gray := image.NewGray(b)
+	draw.Draw(gray, b, img, b.Min, draw.Src)
 	new := image.NewGray(b)
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
-			window := surrounding(img, x, y, windowsize)
+			window := surrounding(gray, x, y, windowsize)
 			m, dev := meanstddev(window)
 			threshold := m * (1 + ksize*((dev/128)-1))
-			if img.GrayAt(x, y).Y < uint8(threshold) {
+			if gray.GrayAt(x, y).Y < uint8(math.Round(threshold)) {
 				new.SetGray(x, y, color.Gray{0})
 			} else {
 				new.SetGray(x, y, color.Gray{255})
