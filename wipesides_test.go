@@ -117,8 +117,12 @@ func TestWipeSides(t *testing.T) {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
 			}
 			b := img.Bounds()
+			gray := image.NewGray(b)
+			draw.Draw(gray, b, img, b.Min, draw.Src)
+			rotimg := sideways(img)
+			b = rotimg.Bounds()
 			intImg := integralimg.NewImage(b)
-			draw.Draw(intImg, b, img, b.Min, draw.Src)
+			draw.Draw(intImg, b, rotimg, b.Min, draw.Src)
 			topedge, bottomedge := findedges(*intImg, c.wsize, c.thresh)
 			if topedge < c.mintop {
 				t.Errorf("Top edge %d < minimum %d", topedge, c.mintop)
