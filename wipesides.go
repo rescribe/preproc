@@ -149,13 +149,14 @@ func toonarrow(img *image.Gray, lowedge int, highedge int, min int) bool {
 }
 
 // sideways flips an image sideways
-func sideways(img *image.Gray) *image.Gray {
+func sideways(img image.Image) *image.Gray {
 	b := img.Bounds()
 	newb := image.Rect(b.Min.Y, b.Min.X, b.Max.Y, b.Max.X)
 	new := image.NewGray(newb)
 	for x := b.Min.X; x < b.Max.X; x++ {
 		for y := b.Min.Y; y < b.Max.Y; y++ {
-			new.SetGray(y, x, img.GrayAt(x, y))
+			c := img.At(x, y)
+			new.SetGray(y, x, color.GrayModel.Convert(c).(color.Gray))
 		}
 	}
 	return new
@@ -212,7 +213,7 @@ func WipeFile(inPath string, outPath string, hwsize int, hthresh float64, hmin i
 		return errors.New(fmt.Sprintf("Could not decode image: %v", err))
 	}
 	b := img.Bounds()
-	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
+	gray := image.NewGray(b)
 	draw.Draw(gray, b, img, b.Min, draw.Src)
 
 	vclean := VWipe(gray, vwsize, vthresh, vmin)
