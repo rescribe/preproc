@@ -29,14 +29,14 @@ between those lines.
 `
 
 // returns the proportion of the given window that is black pixels
-func proportion(i integralimg.I, x int, size int) float64 {
+func proportion(i integralimg.Image, x int, size int) float64 {
 	w := i.GetVerticalWindow(x, size)
 	return w.Proportion()
 }
 
 // findbestvline goes through every vertical line from x to x+w to
 // find the one with the lowest proportion of black pixels.
-func findbestvline(img integralimg.I, x int, w int) int {
+func findbestvline(img integralimg.Image, x int, w int) int {
 	var bestx int
 	var best float64
 
@@ -60,8 +60,8 @@ func findbestvline(img integralimg.I, x int, w int) int {
 // for each line. It works by moving a window of wsize across the image,
 // marking each place where there is a higher proportion of black pixels
 // than thresh.
-func findvlines(img integralimg.I, wsize int, thresh float64) []int {
-	maxx := len(img[0]) - 1
+func findvlines(img integralimg.Image, wsize int, thresh float64) []int {
+	maxx := img.Bounds().Dx() - 1
 	var lines []int
 
 	for x := 0; x < maxx-wsize; x+=wsize {
@@ -114,8 +114,9 @@ func main() {
 	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
 	draw.Draw(gray, b, img, b.Min, draw.Src)
 
-	integral := integralimg.ToIntegralImg(gray)
-	vlines := findvlines(integral, *wsize, *thresh)
+	integral := integralimg.NewImage(b)
+	draw.Draw(integral, b, gray, b.Min, draw.Src)
+	vlines := findvlines(*integral, *wsize, *thresh)
 
 	for i, v := range vlines {
 		fmt.Printf("line detected at x=%d\n", v)

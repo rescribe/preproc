@@ -166,17 +166,19 @@ func main() {
 		log.Fatalf("Could not decode image: %v\n", err)
 	}
 	b := img.Bounds()
-	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
-	draw.Draw(gray, b, img, b.Min, draw.Src)
 	if *vertical {
-		gray = sideways(gray)
+		gray := image.NewGray(b)
+		draw.Draw(gray, b, img, b.Min, draw.Src)
+		img = sideways(gray)
+		b = img.Bounds()
 	}
-	integral := integralimg.ToIntegralImg(gray)
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, img, b.Min, draw.Src)
 
 	points := make(map[int]float64)
-	maxx := len(integral[0]) - 1
+	maxx := b.Dx() - 1
 	for x := 0; x+*width < maxx; x += *width {
-		w := integral.GetVerticalWindow(x, *width)
+		w := intImg.GetVerticalWindow(x, *width)
 		points[x] = w.Proportion()
 	}
 

@@ -59,8 +59,6 @@ func main() {
 		log.Fatalf("Could not decode image: %v\n", err)
 	}
 	b := img.Bounds()
-	gray := image.NewGray(image.Rect(0, 0, b.Dx(), b.Dy()))
-	draw.Draw(gray, b, img, b.Min, draw.Src)
 
 	if *binwsize == 0 {
 		*binwsize = autowsize(b)
@@ -72,11 +70,14 @@ func main() {
 
 	var clean, threshimg image.Image
 	log.Print("Precalculating integral images")
-	integrals := integralimg.ToAllIntegralImg(gray)
+	intImg := integralimg.NewImage(b)
+	draw.Draw(intImg, b, img, b.Min, draw.Src)
+	intSqImg := integralimg.NewSqImage(b)
+	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
 
 	for _, k := range ksizes {
 		log.Print("Binarising")
-		threshimg = preproc.PreCalcedSauvola(integrals, gray, k, *binwsize)
+		threshimg = preproc.PreCalcedSauvola(*intImg, *intSqImg, img, k, *binwsize)
 
 		if *btype == "zeroinv" {
 			threshimg, err = preproc.BinToZeroInv(threshimg.(*image.Gray), img.(*image.RGBA))
