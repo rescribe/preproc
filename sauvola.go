@@ -61,7 +61,8 @@ func PreCalcedSauvola(intImg integralimg.Image, intSqImg integralimg.SqImage, im
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
-			m, dev := integralimg.MeanStdDevWindow(intImg, intSqImg, x, y, windowsize)
+			r := centeredRectangle(x, y, windowsize)
+			m, dev := integralimg.MeanStdDev(intImg, intSqImg, r)
 			// Divide by 255 to adjust from Gray16 used by integralimg to 8 bit Gray
 			m8 := m / 255
 			dev8 := dev / 255
@@ -75,4 +76,9 @@ func PreCalcedSauvola(intImg integralimg.Image, intSqImg integralimg.SqImage, im
 	}
 
 	return new
+}
+
+func centeredRectangle(x, y, size int) image.Rectangle {
+	step := size / 2
+	return image.Rect(x - step - 1, y - step - 1, x + step, y + step)
 }
