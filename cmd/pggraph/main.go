@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // pggraph creates a graph showing the proportion of black pixels
-// for slices through an image. This is useful to determine
+// for slices through a binarised image. This is useful to determine
 // appropriate parameters to pass to the wipe functions in this
 // module.
 package main
@@ -27,8 +27,8 @@ import (
 
 const usage = `Usage: pggraph [-vertical] [-width] inimg graphname
 
-Creates a graph showing the proportion of black pixels
-for slices through an image. This is useful to determine
+Creates a graph showing the proportion of black pixels for
+slices through a binarised image. This is useful to determine
 appropriate parameters to pass to the wipe functions in
 this module.
 `
