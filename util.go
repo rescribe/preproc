@@ -8,14 +8,11 @@ import (
 	"errors"
 	"image"
 	"math"
-
-	"rescribe.xyz/integralimg"
 )
 
-type ImageWindower interface {
+type SummableImage interface {
 	image.Image
-	GetWindow(x, y, size int) integralimg.Window
-	GetVerticalWindow(x, width int) integralimg.Window
+	Sum(r image.Rectangle) uint64
 }
 
 func mean(i []int) float64 {

@@ -19,17 +19,22 @@ import (
 	"rescribe.xyz/integralimg"
 )
 
-// returns the proportion of the given window that is black pixels
-func proportion(i ImageWindower, x int, size int) float64 {
-	w := i.GetVerticalWindow(x, size)
-	return w.Proportion()
+// ProportionSlice returns the proportion of black pixels in a
+// vertical slice of an image starting at x, width pixels wide.
+func ProportionSlice(i SummableImage, x int, width int) float64 {
+	r := image.Rect(x, 0, x + width, i.Bounds().Dy())
+	in := r.Intersect(i.Bounds())
+	area := in.Dx() * in.Dy()
+	// 1 << 16 - 1 as we're using Gray16, so 1 << 16 - 1 = white
+	numwhite := float64(i.Sum(in)) / float64(1 << 16 - 1)
+	return float64(area) / float64(numwhite) - 1
 }
 
 // findbestedge goes through every vertical line from x to x+w to
 // find the one with the lowest proportion of black pixels.
 // if there are multiple lines with the same proportion (e.g. zero),
 // choose the middle one.
-func findbestedge(img ImageWindower, x int, w int) int {
+func findbestedge(img SummableImage, x int, w int) int {
 	var best float64
 	var bestxs []int
 
@@ -41,7 +46,7 @@ func findbestedge(img ImageWindower, x int, w int) int {
 
 	right := x + w
 	for ; x < right; x++ {
-		prop := proportion(img, x, 1)
+		prop := ProportionSlice(img, x, 1)
 		if prop < best {
 			bestxs = make([]int, 0)
 			best = prop
@@ -55,10 +60,10 @@ func findbestedge(img ImageWindower, x int, w int) int {
 	return middlex
 }
 
-// findedges finds the edges of the main content, by moving a window of wsize
+// findedges finds the edges of the main content, by moving a wsize width vertical slice
 // from near the middle of the image to the left and right, stopping when it reaches
 // a point at which there is a lower proportion of black pixels than thresh.
-func findedges(img ImageWindower, wsize int, thresh float64) (int, int) {
+func findedges(img SummableImage, wsize int, thresh float64) (int, int) {
 	maxx := img.Bounds().Dx() - 1
 	var lowedge, highedge int = 0, maxx
 
@@ -67,14 +72,14 @@ func findedges(img ImageWindower, wsize int, thresh float64) (int, int) {
 	notcentre := maxx / 10
 
 	for x := maxx/2 + notcentre; x < maxx-wsize; x++ {
-		if proportion(img, x, wsize) <= thresh {
+		if ProportionSlice(img, x, wsize) <= thresh {
 			highedge = findbestedge(img, x, wsize)
 			break
 		}
 	}
 
 	for x := maxx/2 - notcentre; x > 0; x-- {
-		if proportion(img, x, wsize) <= thresh {
+		if ProportionSlice(img, x, wsize) <= thresh {
 			lowedge = findbestedge(img, x, wsize)
 			break
 		}
@@ -87,19 +92,19 @@ func findedges(img ImageWindower, wsize int, thresh float64) (int, int) {
 // but working from the outside of the image inwards, rather than from the
 // middle outwards.
 // TODO: test what difference this makes
-func findedgesOutin(img ImageWindower, wsize int, thresh float64) (int, int) {
+func findedgesOutin(img SummableImage, wsize int, thresh float64) (int, int) {
 	maxx := img.Bounds().Dx() - 1
 	var lowedge, highedge int = 0, maxx
 
 	for x := maxx-wsize; x > 0; x-- {
-		if proportion(img, x, wsize) > thresh {
+		if ProportionSlice(img, x, wsize) > thresh {
 			highedge = findbestedge(img, x, wsize)
 			break
 		}
 	}
 
 	for x := 0; x < maxx-wsize; x++ {
-		if proportion(img, x, wsize) > thresh {
+		if ProportionSlice(img, x, wsize) > thresh {
 			lowedge = findbestedge(img, x, wsize)
 			break
 		}
@@ -196,10 +201,10 @@ func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 // content area is above min %.
 // inPath: path of the input image.
 // outPath: path to save the output image.
-// hwsize: window size for horizontal wipe algorithm.
+// hwsize: window size (width) for horizontal wipe algorithm.
 // hthresh: threshold for horizontal wipe algorithm.
 // hmin: minimum % of content area width to consider valid.
-// vwsize: window size for vertical wipe algorithm.
+// vwsize: window size (height) for vertical wipe algorithm.
 // vthresh: threshold for vertical wipe algorithm.
 // vmin: minimum % of content area height to consider valid.
 func WipeFile(inPath string, outPath string, hwsize int, hthresh float64, hmin int, vwsize int, vthresh float64, vmin int) error {

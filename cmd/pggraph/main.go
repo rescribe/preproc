@@ -22,6 +22,7 @@ import (
 
 	chart "github.com/wcharczuk/go-chart"
 	"rescribe.xyz/integralimg"
+	"rescribe.xyz/preproc"
 )
 
 const usage = `Usage: pggraph [-vertical] [-width] inimg graphname
@@ -178,8 +179,7 @@ func main() {
 	points := make(map[int]float64)
 	maxx := b.Dx() - 1
 	for x := 0; x+*width < maxx; x += *width {
-		w := intImg.GetVerticalWindow(x, *width)
-		points[x] = w.Proportion()
+		points[x] = preproc.ProportionSlice(intImg, x, *width)
 	}
 
 	f, err = os.Create(flag.Arg(1))
