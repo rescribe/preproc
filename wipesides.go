@@ -143,7 +143,7 @@ func wipesides(img *image.Gray, lowedge int, highedge int) *image.Gray {
 
 // toonarrow checks whether the area between lowedge and highedge is
 // less than min % of the total image width
-func toonarrow(img *image.Gray, lowedge int, highedge int, min int) bool {
+func toonarrow(img image.Image, lowedge int, highedge int, min int) bool {
 	b := img.Bounds()
 	imgw := b.Max.X - b.Min.X
 	wipew := highedge - lowedge
@@ -161,7 +161,7 @@ func sideways(img image.Image) *image.Gray {
 	for x := b.Min.X; x < b.Max.X; x++ {
 		for y := b.Min.Y; y < b.Max.Y; y++ {
 			c := img.At(x, y)
-			new.SetGray(y, x, color.GrayModel.Convert(c).(color.Gray))
+			new.Set(y, x, c)
 		}
 	}
 	return new
