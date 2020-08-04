@@ -16,7 +16,7 @@ import (
 	"image/png"
 	"os"
 
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 )
 
 // ProportionSlice returns the proportion of black pixels in a
@@ -171,7 +171,7 @@ func sideways(img image.Image) *image.Gray {
 // area with white, providing the content area is above min %
 func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 	b := img.Bounds()
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
 	lowedge, highedge := findedges(*intImg, wsize, thresh)
 	if toonarrow(img, lowedge, highedge, min) {
@@ -185,7 +185,7 @@ func Wipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 	rotimg := sideways(img)
 	b := rotimg.Bounds()
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, rotimg, b.Min, draw.Src)
 	// TODO: test whether there are any places where Outin makes a real difference
 	lowedge, highedge:= findedgesOutin(*intImg, wsize, thresh)

@@ -16,7 +16,7 @@ import (
 	"os"
 	"testing"
 
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 )
 
 func TestWipeSides(t *testing.T) {
@@ -79,7 +79,7 @@ func TestWipeSides(t *testing.T) {
 				t.Fatalf("Could not open file %s: %v\n", c.filename, err)
 			}
 			b := img.Bounds()
-			integral := integralimg.NewImage(b)
+			integral := integral.NewImage(b)
 			draw.Draw(integral, b, img, b.Min, draw.Src)
 			leftedge, rightedge := findedges(*integral, c.wsize, c.thresh)
 			if leftedge < c.minleft {
@@ -119,7 +119,7 @@ func TestWipeSides(t *testing.T) {
 			b := img.Bounds()
 			rotimg := sideways(img)
 			b = rotimg.Bounds()
-			intImg := integralimg.NewImage(b)
+			intImg := integral.NewImage(b)
 			draw.Draw(intImg, b, rotimg, b.Min, draw.Src)
 			topedge, bottomedge := findedges(*intImg, c.wsize, c.thresh)
 			if topedge < c.mintop {

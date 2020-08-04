@@ -13,7 +13,7 @@ import (
 	"os"
 	"strings"
 
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 )
 
 func autowsize(bounds image.Rectangle) int {
@@ -59,9 +59,9 @@ func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int,
 		binWsize++
 	}
 
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
-	intSqImg := integralimg.NewSqImage(b)
+	intSqImg := integral.NewSqImage(b)
 	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
 
 	var clean, threshimg image.Image

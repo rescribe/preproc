@@ -20,9 +20,9 @@ func TestBinarization(t *testing.T) {
 		ksize  float64
 		wsize  int
 	}{
-		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_integralsauvola_k0.5_w41.png", 0.5, 41},
-		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_integralsauvola_k0.5_w19.png", 0.5, 19},
-		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_integralsauvola_k0.3_w19.png", 0.3, 19},
+		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.5_w41.png", 0.5, 41},
+		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.5_w19.png", 0.5, 19},
+		{"integralsauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.3_w19.png", 0.3, 19},
 		{"sauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.5_w41.png", 0.5, 41},
 		{"sauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.5_w19.png", 0.5, 19},
 		{"sauvola", "testdata/pg1.png", "testdata/pg1_sauvola_k0.3_w19.png", 0.3, 19},

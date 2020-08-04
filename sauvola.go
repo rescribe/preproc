@@ -10,7 +10,7 @@ import (
 	"image/draw"
 	"math"
 
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 )
 
 // Implements Sauvola's algorithm for text binarization, see paper
@@ -44,16 +44,16 @@ func Sauvola(img image.Image, ksize float64, windowsize int) *image.Gray {
 func IntegralSauvola(img image.Image, ksize float64, windowsize int) *image.Gray {
 	b := img.Bounds()
 
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
-	intSqImg := integralimg.NewSqImage(b)
+	intSqImg := integral.NewSqImage(b)
 	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
 
 	return PreCalcedSauvola(*intImg, *intSqImg, img, ksize, windowsize)
 }
 
 // PreCalcedSauvola Implements Sauvola's algorithm using precalculated Integral Images
-func PreCalcedSauvola(intImg integralimg.Image, intSqImg integralimg.SqImage, img image.Image, ksize float64, windowsize int) *image.Gray {
+func PreCalcedSauvola(intImg integral.Image, intSqImg integral.SqImage, img image.Image, ksize float64, windowsize int) *image.Gray {
 	b := img.Bounds()
 	gray := image.NewGray(b)
 	draw.Draw(gray, b, img, b.Min, draw.Src)
@@ -62,8 +62,8 @@ func PreCalcedSauvola(intImg integralimg.Image, intSqImg integralimg.SqImage, im
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			r := centeredRectangle(x, y, windowsize)
-			m, dev := integralimg.MeanStdDev(intImg, intSqImg, r)
-			// Divide by 255 to adjust from Gray16 used by integralimg to 8 bit Gray
+			m, dev := integral.MeanStdDev(intImg, intSqImg, r)
+			// Divide by 255 to adjust from Gray16 used by integral.Image to 8 bit Gray
 			m8 := m / 255
 			dev8 := dev / 255
 			threshold := m8 * (1 + ksize*((dev8/128)-1))

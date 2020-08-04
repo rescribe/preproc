@@ -19,7 +19,7 @@ import (
 	"os"
 
 	"rescribe.xyz/preproc"
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 )
 
 // TODO: do more testing to see how good this assumption is
@@ -70,9 +70,9 @@ func main() {
 
 	var clean, threshimg image.Image
 	log.Print("Precalculating integral images")
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
-	intSqImg := integralimg.NewSqImage(b)
+	intSqImg := integral.NewSqImage(b)
 	draw.Draw(intSqImg, b, img, b.Min, draw.Src)
 
 	for _, k := range ksizes {

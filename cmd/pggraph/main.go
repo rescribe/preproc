@@ -21,7 +21,7 @@ import (
 	"sort"
 
 	chart "github.com/wcharczuk/go-chart"
-	"rescribe.xyz/integralimg"
+	"rescribe.xyz/integral"
 	"rescribe.xyz/preproc"
 )
 
@@ -173,7 +173,7 @@ func main() {
 		img = sideways(gray)
 		b = img.Bounds()
 	}
-	intImg := integralimg.NewImage(b)
+	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
 
 	points := make(map[int]float64)
