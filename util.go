@@ -50,11 +50,11 @@ func surrounding(img *image.Gray, x int, y int, size int) []int {
 	b := img.Bounds()
 	step := size / 2
 
-	miny := y - step
+	miny := y - step - 1
 	if miny < b.Min.Y {
 		miny = b.Min.Y
 	}
-	minx := x - step
+	minx := x - step - 1
 	if minx < b.Min.X {
 		minx = b.Min.X
 	}
@@ -68,8 +68,8 @@ func surrounding(img *image.Gray, x int, y int, size int) []int {
 	}
 
 	var s []int
-	for yi := miny; yi <= maxy; yi++ {
-		for xi := minx; xi <= maxx; xi++ {
+	for yi := miny; yi < maxy; yi++ {
+		for xi := minx; xi < maxx; xi++ {
 			s = append(s, int(img.GrayAt(xi, yi).Y))
 		}
 	}
