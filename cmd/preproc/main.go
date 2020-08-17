@@ -38,6 +38,9 @@ func main() {
 	nowipe := flag.Bool("nowipe", false, "Disable wiping completely.")
 	wipewsize := flag.Int("ws", 5, "Window size for wiping algorithm.")
 	thresh := flag.Float64("wt", 0.05, "Threshold for the wiping algorithm to determine the proportion of black pixels below which a window is determined to be the edge.")
+	vmin := flag.Int("vm", 30, "Minimum percentage of the image height for the content width calculation to be considered valid.")
+	vthresh := flag.Float64("vt", 0.005, "Threshold for the proportion of black pixels below which a vertical wipe window is determined to be the edge. Higher means more aggressive wiping.")
+	vwsize := flag.Int("vw", 120, "Window size for vertical mask finding algorithm. Should be set to approximately line height + largest expected gap.")
 	flag.Parse()
 	if flag.NArg() < 2 {
 		flag.Usage()
@@ -66,7 +69,7 @@ func main() {
 	}
 
 	log.Print("Binarising")
-	var clean, threshimg image.Image
+	var clean, threshimg, vclean image.Image
 	threshimg = preproc.IntegralSauvola(gray, *ksize, *binwsize)
 
 	if *btype == "zeroinv" {
@@ -78,7 +81,8 @@ func main() {
 
 	if !*nowipe {
 		log.Print("Wiping sides")
-		clean = preproc.Wipe(threshimg.(*image.Gray), *wipewsize, *thresh, *min)
+		vclean = preproc.VWipe(threshimg.(*image.Gray), *vwsize, *vthresh, *vmin)
+		clean = preproc.Wipe(vclean.(*image.Gray), *wipewsize, *thresh, *min)
 	} else {
 		clean = threshimg
 	}

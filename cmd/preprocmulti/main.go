@@ -42,6 +42,9 @@ func main() {
 	min := flag.Int("m", 30, "Minimum percentage of the image width for the content width calculation to be considered valid.")
 	nowipe := flag.Bool("nowipe", false, "Disable wiping completely.")
 	wipewsize := flag.Int("ws", 5, "Window size for wiping algorithm.")
+	vmin := flag.Int("vm", 30, "Minimum percentage of the image height for the content width calculation to be considered valid.")
+	vthresh := flag.Float64("vt", 0.005, "Threshold for the proportion of black pixels below which a vertical wipe window is determined to be the edge. Higher means more aggressive wiping.")
+	vwsize := flag.Int("vw", 120, "Window size for vertical mask finding algorithm. Should be set to approximately line height + largest expected gap.")
 	flag.Parse()
 	if flag.NArg() < 2 {
 		flag.Usage()
@@ -68,7 +71,7 @@ func main() {
 		*binwsize++
 	}
 
-	var clean, threshimg image.Image
+	var clean, threshimg, vclean image.Image
 	log.Print("Precalculating integral images")
 	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, img, b.Min, draw.Src)
@@ -88,7 +91,8 @@ func main() {
 
 		if !*nowipe {
 			log.Print("Wiping sides")
-			clean = preproc.Wipe(threshimg.(*image.Gray), *wipewsize, k*0.02, *min)
+			vclean = preproc.VWipe(threshimg.(*image.Gray), *vwsize, *vthresh, *vmin)
+			clean = preproc.Wipe(vclean.(*image.Gray), *wipewsize, k*0.02, *min)
 		} else {
 			clean = threshimg
 		}
