@@ -72,7 +72,7 @@ func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int,
 		if binType == "zeroinv" {
 			threshimg, err = BinToZeroInv(threshimg.(*image.Gray), img.(*image.RGBA))
 			if err != nil {
-				return donePaths, fmt.Errorf("Error in BinToZeroInv: ", err)
+				return donePaths, fmt.Errorf("Error in BinToZeroInv: %v", err)
 			}
 		}
 
@@ -91,7 +91,7 @@ func PreProcMulti(inPath string, ksizes []float64, binType string, binWsize int,
 		defer f.Close()
 		err = png.Encode(f, clean)
 		if err != nil {
-			return donePaths, fmt.Errorf("Error encoding image as png: %v", savefn, err)
+			return donePaths, fmt.Errorf("Error encoding image %s as png: %v", savefn, err)
 		}
 		donePaths = append(donePaths, savefn)
 	}
