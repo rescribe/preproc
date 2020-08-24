@@ -216,6 +216,10 @@ func main() {
 	}
 
 	if *verbose {
-		fmt.Printf("%s %0.2f %0.2f\n", flag.Arg(0), miny, maxy)
+		v := ""
+		if *vertical {
+			v = " vertical"
+		}
+		fmt.Printf("%s %d%s %0.2f %0.2f\n", flag.Arg(0), *width, v, miny, maxy)
 	}
 }
