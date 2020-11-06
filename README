@@ -10,6 +10,11 @@ by running `go get rescribe.xyz/preproc/...` and documentation
 can be read with the `go doc` command or online at
 <https://pkg.go.dev/rescribe.xyz/preproc>.
 
+If you just want to install and use the commands, you can get the
+package with `git clone https://git.rescribe.xyz/preproc`, and then
+install them with `go install ./...` from within the `preproc`
+directory.
+
 ## Commands
 
 There are several commands in the cmd/ directory which are useful
