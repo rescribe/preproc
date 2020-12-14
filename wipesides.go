@@ -55,6 +55,9 @@ func findbestedge(img SummableImage, x int, w int) int {
 			bestxs = append(bestxs, x)
 		}
 	}
+	if len(bestxs) == 0 {
+		return 0
+	}
 	middlex := bestxs[len(bestxs)/2]
 
 	return middlex
