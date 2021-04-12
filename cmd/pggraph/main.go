@@ -20,7 +20,7 @@ import (
 	"os"
 	"sort"
 
-	chart "github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/v2"
 	"rescribe.xyz/integral"
 	"rescribe.xyz/preproc"
 )
