@@ -22,12 +22,12 @@ import (
 // ProportionSlice returns the proportion of black pixels in a
 // vertical slice of an image starting at x, width pixels wide.
 func ProportionSlice(i SummableImage, x int, width int) float64 {
-	r := image.Rect(x, 0, x + width, i.Bounds().Dy())
+	r := image.Rect(x, 0, x+width, i.Bounds().Dy())
 	in := r.Intersect(i.Bounds())
 	area := in.Dx() * in.Dy()
 	// 1 << 16 - 1 as we're using Gray16, so 1 << 16 - 1 = white
-	numwhite := float64(i.Sum(in)) / float64(1 << 16 - 1)
-	return float64(area) / float64(numwhite) - 1
+	numwhite := float64(i.Sum(in)) / float64(1<<16-1)
+	return float64(area)/float64(numwhite) - 1
 }
 
 // findbestedge goes through every vertical line from x to x+w to
@@ -99,7 +99,7 @@ func findedgesOutin(img SummableImage, wsize int, thresh float64) (int, int) {
 	maxx := img.Bounds().Dx() - 1
 	var lowedge, highedge int = 0, maxx
 
-	for x := maxx-wsize; x > 0; x-- {
+	for x := maxx - wsize; x > 0; x-- {
 		if ProportionSlice(img, x, wsize) > thresh {
 			highedge = findbestedge(img, x, wsize)
 			break
@@ -191,7 +191,7 @@ func VWipe(img *image.Gray, wsize int, thresh float64, min int) *image.Gray {
 	intImg := integral.NewImage(b)
 	draw.Draw(intImg, b, rotimg, b.Min, draw.Src)
 	// TODO: test whether there are any places where Outin makes a real difference
-	lowedge, highedge:= findedgesOutin(*intImg, wsize, thresh)
+	lowedge, highedge := findedgesOutin(*intImg, wsize, thresh)
 	if toonarrow(img, lowedge, highedge, min) {
 		return img
 	}
