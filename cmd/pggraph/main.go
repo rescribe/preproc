@@ -20,12 +20,12 @@ import (
 	"os"
 	"sort"
 
-	chart "github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/v2"
 	"rescribe.xyz/integral"
 	"rescribe.xyz/preproc"
 )
 
-const usage = `Usage: pggraph [-vertical] [-width] inimg graphname
+const usage = `Usage: pggraph [-vertical] [-width] [-v] inimg graphname
 
 Creates a graph showing the proportion of black pixels for
 slices through a binarised image. This is useful to determine
@@ -49,14 +49,15 @@ func sideways(img *image.Gray) *image.Gray {
 	return new
 }
 
-func graph(title string, points map[int]float64, w io.Writer) error {
+func graph(title string, points map[int]float64, w io.Writer) (float64, float64, error) {
 	var xvals, yvals []float64
 	var xs []int
 	var midxvals, midyvals []float64
 	var midxs []int
+	var miny, maxy float64
 
 	if len(points) < 2 {
-		return fmt.Errorf("Not enough points to graph, only %d\n", len(points))
+		return miny, maxy, fmt.Errorf("Not enough points to graph, only %d\n", len(points))
 	}
 
 	for x, _ := range points {
@@ -90,6 +91,18 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 	for _, x := range midxs {
 		midxvals = append(midxvals, float64(x))
 		midyvals = append(midyvals, points[x])
+	}
+
+	miny = 100.0
+	maxy = 0.0
+	for _, x := range midxs {
+		y := points[x]
+		if y < miny {
+			miny = y
+		}
+		if y > maxy {
+			maxy = y
+		}
 	}
 
 	middleSeries := chart.ContinuousSeries{
@@ -131,6 +144,10 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 		},
 		YAxis: chart.YAxis{
 			Name: "Proportion of black pixels",
+			Range: &chart.ContinuousRange{
+				Min: 0.0,
+				Max: 0.5,
+			},
 		},
 		Series: []chart.Series{
 			mainSeries,
@@ -141,7 +158,7 @@ func graph(title string, points map[int]float64, w io.Writer) error {
 		},
 	}
 
-	return graph.Render(chart.PNG, w)
+	return miny, maxy, graph.Render(chart.PNG, w)
 }
 
 func main() {
@@ -151,6 +168,7 @@ func main() {
 	}
 	vertical := flag.Bool("vertical", false, "Slice image vertically (from top to bottom) rather than horizontally")
 	width := flag.Int("width", 5, "Width of slice in pixels (height if in vertical mode)")
+	verbose := flag.Bool("v", false, "Print the minimum and maximum values of the middle section to the console")
 	flag.Parse()
 	if flag.NArg() < 2 {
 		flag.Usage()
@@ -192,8 +210,16 @@ func main() {
 	if *vertical {
 		title += " (vertical)"
 	}
-	err = graph(title, points, f)
+	miny, maxy, err := graph(title, points, f)
 	if err != nil {
 		log.Fatalf("Could not create graph: %v\n", err)
+	}
+
+	if *verbose {
+		v := ""
+		if *vertical {
+			v = " vertical"
+		}
+		fmt.Printf("%s %d%s %0.2f %0.2f\n", flag.Arg(0), *width, v, miny, maxy)
 	}
 }

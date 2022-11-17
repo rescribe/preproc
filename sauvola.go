@@ -80,5 +80,5 @@ func PreCalcedSauvola(intImg integral.Image, intSqImg integral.SqImage, img imag
 
 func centeredRectangle(x, y, size int) image.Rectangle {
 	step := size / 2
-	return image.Rect(x - step - 1, y - step - 1, x + step, y + step)
+	return image.Rect(x-step-1, y-step-1, x+step, y+step)
 }
